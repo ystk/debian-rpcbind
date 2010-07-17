@@ -1,0 +1,53 @@
+rpcbind (0.2.0-4.1) unstable; urgency=high
+
+  * Non-maintainer upload by the security team.
+  * CVE-2010-2061: Store state files in /var/run/rpcbind instead of /tmp.
+    Closes: #583435
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 17 Jul 2010 21:47:56 +0200
+
+rpcbind (0.2.0-4) unstable; urgency=low
+
+  * -w is the default option 
+  * Pass the -w option
+    Closes: 563970
+  * Enable warm starts
+    Add 03-563971-warmstart-error-msg.patch
+    Closes: 563971
+  * Enable host name checking
+    Build-depend on libwrap0-dev
+  * Provide portmap
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Fri, 08 Jan 2010 10:13:54 +1100
+
+rpcbind (0.2.0-3) unstable; urgency=low
+
+  * Add 01-usage-fix.patch from redhat
+  * Add init script
+    Conflict with portmap
+    Depend on lsb-base (>= 3.2-14)
+    Closes: 563053
+  * Don't rename rpcinfo
+  * Put rpcbind in /sbin and rpcinfo in /usr/sbin
+  * Rename rpcinfo.8 as rpcinfo.7
+  * Add 02-manpages.patch
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Wed, 06 Jan 2010 15:37:32 +1100
+
+rpcbind (0.2.0-2) unstable; urgency=low
+
+  * Don't overwrite files from libc{-bin,N}
+    Rename rpcinfo as rpcbindinfo and rpcinfo.8 as rpcbindinfo.8
+    Patch by Ivan Shmakov
+    Closes: 544567
+  * Add debian/watch 
+  * Debian source format is 3.0 (quilt)
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Sun, 27 Dec 2009 21:39:02 +1100
+
+rpcbind (0.2.0-1) unstable; urgency=low
+
+  * Initial release
+    Closes: #542791
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Fri, 21 Aug 2009 18:51:29 +1000

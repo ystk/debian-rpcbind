@@ -1,0 +1,16 @@
+Source: rpcbind
+Section: net
+Priority: standard
+Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
+Build-Depends: debhelper (>= 7), autotools-dev, libtirpc-dev, libwrap0-dev
+Standards-Version: 3.8.3
+Homepage: http://sourceforge.net/projects/rpcbind/
+
+Package: rpcbind
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.2-14)
+Conflicts: portmap
+Provides: portmap
+Description: converts RPC program numbers into universal addresses
+ The rpcbind utility is a server that converts RPC program numbers
+ into universal addresses.
