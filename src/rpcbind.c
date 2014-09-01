@@ -67,8 +67,11 @@
 #include <pwd.h>
 #include <string.h>
 #include <errno.h>
+#ifdef HAVE_NSS_H
 #include <nss.h>
-#include "config.h"
+#else
+static inline void __nss_configure_lookup(const char *db, const char *s) {}
+#endif
 #include "rpcbind.h"
 
 /*#define RPCBIND_DEBUG*/
@@ -77,6 +80,7 @@
 
 int debugging = 0;	/* Tell me what's going on */
 int doabort = 0;	/* When debugging, do an abort on errors */
+int dofork = 1;		/* fork? */
 
 rpcblist_ptr list_rbl;	/* A list of version 3/4 rpcbind services */
 
@@ -213,8 +217,8 @@ main(int argc, char *argv[])
 			printf("\n");
 		}
 #endif
-	} else {
-		if (daemon(0, 0)) 
+	} else if (dofork) {
+		if (daemon(0, 0))
         		err(1, "fork failed");
 	}
 
@@ -236,6 +240,10 @@ main(int argc, char *argv[])
                         syslog(LOG_ERR, "setgid to '%s' (%d) failed: %m", id, p->pw_gid);
                         exit(1);
                 }
+		if (setgroups(0, NULL) == -1) {
+			syslog(LOG_ERR, "dropping supplemental groups failed: %m");
+			exit(1);
+		}
 		if (setuid(p->pw_uid) == -1) {
 			syslog(LOG_ERR, "setuid to '%s' (%d) failed: %m", id, p->pw_uid);
 			exit(1);
@@ -276,6 +284,7 @@ init_transport(struct netconfig *nconf)
 	int addrlen = 0;
 	int nhostsbak;
 	int checkbind;
+	int on = 1;
 	struct sockaddr *sa = NULL;
 	u_int32_t host_addr[4];  /* IPv4 or IPv6 */
 	struct sockaddr_un sun;
@@ -493,6 +502,14 @@ init_transport(struct netconfig *nconf)
 		}
 		oldmask = umask(S_IXUSR|S_IXGRP|S_IXOTH);
 		__rpc_fd2sockinfo(fd, &si);
+		if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on,
+				sizeof(on)) != 0) {
+			syslog(LOG_ERR, "cannot set SO_REUSEADDR on %s",
+				nconf->nc_netid);
+			if (res != NULL)
+				freeaddrinfo(res);
+			return 1;
+		}
 		if (bind(fd, sa, addrlen) < 0) {
 			syslog(LOG_ERR, "cannot bind %s: %m", nconf->nc_netid);
 			if (res != NULL)
@@ -731,7 +748,7 @@ parseargs(int argc, char *argv[])
 {
 	int c;
 	oldstyle_local = 1;
-	while ((c = getopt(argc, argv, "dwah:ils")) != -1) {
+	while ((c = getopt(argc, argv, "adh:ilswf")) != -1) {
 		switch (c) {
 		case 'a':
 			doabort = 1;	/* when debugging, do an abort on */
@@ -758,13 +775,16 @@ parseargs(int argc, char *argv[])
 		case 's':
 			runasdaemon = 1;
 			break;
+		case 'f':
+			dofork = 0;
+			break;
 #ifdef WARMSTART
 		case 'w':
 			warmstart = 1;
 			break;
 #endif
 		default:	/* error */
-			fprintf(stderr,	"usage: rpcbind [-Idwils]\n");
+			fprintf(stderr,	"usage: rpcbind [-adhilswf]\n");
 			exit (1);
 		}
 	}

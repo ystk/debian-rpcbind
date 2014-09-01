@@ -6,7 +6,7 @@
 # Provides:          rpcbind
 # Required-Start:    $network $local_fs
 # Required-Stop:     $network $local_fs
-# Default-Start:     S 2 3 4 5
+# Default-Start:     S
 # Default-Stop:      0 1 6
 # Short-Description: RPC portmapper replacement
 # Description:       rpcbind is a server that converts RPC (Remote
@@ -51,14 +51,13 @@ start ()
         touch $STATEDIR/portmap.xdr
     fi
     [ -x /sbin/restorecon ] && /sbin/restorecon $STATEDIR/*.xdr
-    log_begin_msg "Starting rpcbind daemon..."
     pid=$( pidofproc /sbin/rpcbind )
     if [ -n "$pid" ]
     then
-        log_begin_msg "Already running."
-        log_end_msg 0
+        log_action_msg "Already running: rcpbind"
         exit 0
     fi
+    log_begin_msg "Starting rpcbind daemon..."
     start-stop-daemon --start --quiet --oknodo --exec /sbin/rpcbind -- "$@"
     pid=$( pidofproc /sbin/rpcbind )
     echo -n "$pid" >"$PIDFILE"
@@ -78,12 +77,21 @@ stop ()
 
 case "$1" in
     start)
+        if init_is_upstart; then
+            exit 1
+        fi
         start $OPTIONS
         ;;
     stop)
+        if init_is_upstart; then
+            exit 0
+        fi
         stop
         ;;
     restart|force-reload)
+        if init_is_upstart; then
+            exit 1
+        fi
         stop
         start $OPTIONS
         ;;

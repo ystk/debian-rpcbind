@@ -1,8 +1,8 @@
-Index: rpcbind-0.2.0/src/security.c
+Index: rpcbind-0.2.1/src/security.c
 ===================================================================
---- rpcbind-0.2.0.orig/src/security.c	2011-03-12 17:52:51.000000000 +0100
-+++ rpcbind-0.2.0/src/security.c	2011-03-12 17:53:48.000000000 +0100
-@@ -53,7 +53,7 @@
+--- rpcbind-0.2.1.orig/src/security.c
++++ rpcbind-0.2.1/src/security.c
+@@ -53,7 +53,7 @@ int deny_severity = LIBWRAP_DENY_FACILIT
  #ifndef PORTMAP_LOG_SEVERITY
  # define PORTMAP_LOG_SEVERITY LOG_INFO
  #endif

@@ -24,7 +24,7 @@ config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
 	cp -f /usr/share/misc/config.sub /usr/share/misc/config.guess .
-	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" --enable-warmstarts --enable-libwrap --with-statedir=/run/rpcbind
+	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" --enable-warmstarts --enable-libwrap --with-statedir=/run/rpcbind --with-rpcuser=root
 
 build: build-arch build-indep
 build-arch: build-stamp
@@ -72,7 +72,9 @@ binary-arch: install
 	dh_installdocs
 	dh_installexamples
 	dh_installman man/rpcinfo.7
-	dh_installinit -- start 43 S 2 3 4 5 . start 32 0 6 . stop 81 1 .
+	dh_installinit --no-start --name rpcbind-boot
+	dh_installinit --no-start --name portmap-wait
+	dh_installinit
 	dh_link
 	dh_strip
 	dh_compress
