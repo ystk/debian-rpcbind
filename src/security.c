@@ -62,34 +62,21 @@ int log_severity = PORTMAP_LOG_FACILITY|PORTMAP_LOG_SEVERITY;
 extern int verboselog;
 
 int 
-check_access(SVCXPRT *xprt, rpcproc_t proc, void *args, unsigned int rpcbvers)
+check_access(SVCXPRT *xprt, rpcproc_t proc, rpcprog_t prog, unsigned int rpcbvers)
 {
 	struct netbuf *caller = svc_getrpccaller(xprt);
 	struct sockaddr *addr = (struct sockaddr *)caller->buf;
 #ifdef LIBWRAP
 	struct request_info req;
 #endif
-	rpcprog_t prog = 0;
-	rpcb *rpcbp;
-	struct pmap *pmap;
 
 	/*
 	 * The older PMAP_* equivalents have the same numbers, so
 	 * they are accounted for here as well.
 	 */
 	switch (proc) {
-	case RPCBPROC_GETADDR:
 	case RPCBPROC_SET:
 	case RPCBPROC_UNSET:
-		if (rpcbvers > PMAPVERS) {
-			rpcbp = (rpcb *)args;
-			prog = rpcbp->r_prog;
-		} else {
-			pmap = (struct pmap *)args;
-			prog = pmap->pm_prog;
-		}
-		if (proc == RPCBPROC_GETADDR)
-			break;
 		if (!insecure && !is_loopback(caller)) {
 #ifdef RPCBIND_DEBUG
 			  if (debugging)
@@ -101,6 +88,7 @@ check_access(SVCXPRT *xprt, rpcproc_t proc, void *args, unsigned int rpcbvers)
 			return 0;
 		}
 		break;
+	case RPCBPROC_GETADDR:
 	case RPCBPROC_CALLIT:
 	case RPCBPROC_INDIRECT:
 	case RPCBPROC_DUMP:
@@ -150,8 +138,7 @@ is_loopback(struct netbuf *nbuf)
 				  "Checking caller's adress (port = %d)\n",
 				  ntohs(sin->sin_port));
 #endif
-	       	return ((sin->sin_addr.s_addr == htonl(INADDR_LOOPBACK)) &&
-		    (ntohs(sin->sin_port) < IPPORT_RESERVED));
+	       	return (sin->sin_addr.s_addr == htonl(INADDR_LOOPBACK));
 #ifdef INET6
 	case AF_INET6:
 		if (!oldstyle_local)
@@ -163,10 +150,9 @@ is_loopback(struct netbuf *nbuf)
 				  "Checking caller's adress (port = %d)\n",
 				  ntohs(sin6->sin6_port));
 #endif
-		return ((IN6_IS_ADDR_LOOPBACK(&sin6->sin6_addr) ||
+		return (IN6_IS_ADDR_LOOPBACK(&sin6->sin6_addr) ||
 			 (IN6_IS_ADDR_V4MAPPED(&sin6->sin6_addr) &&
-			  sin6->sin6_addr.s6_addr32[3] == htonl(INADDR_LOOPBACK))) &&
-		        (ntohs(sin6->sin6_port) < IPV6PORT_RESERVED));
+			  sin6->sin6_addr.s6_addr32[3] == htonl(INADDR_LOOPBACK)));
 #endif
 	case AF_LOCAL:
 		return 1;
