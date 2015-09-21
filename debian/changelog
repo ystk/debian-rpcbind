@@ -1,3 +1,11 @@
+rpcbind (0.2.0-4.1+deb6u1) squeeze-lts; urgency=high
+
+  * Non-maintainer upload by the Squeeze LTS Team. 
+  * patch for CVE-2015-7236:
+      remote triggerable use-after-free in rpcbind
+ 
+ -- Thorsten Alteholz <debian@alteholz.de>  Sun, 19 Sep 2015 14:03:02 +0200
+
 rpcbind (0.2.0-4.1) unstable; urgency=high
 
   * Non-maintainer upload by the security team.

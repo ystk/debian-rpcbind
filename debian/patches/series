@@ -2,3 +2,4 @@
 02-manpages.patch
 03-563971-warmstart-error-msg.patch
 debian-changes-0.2.0-4
+04-CVE-2015-7235.patch
