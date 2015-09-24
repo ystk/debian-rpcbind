@@ -1,3 +1,12 @@
+rpcbind (0.2.1-6+deb8u1) jessie-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Add CVE-2015-7236.patch patch.
+    CVE-2015-7236: Memory corruption in PMAP_CALLIT code leading to denial
+    of service. (Closes: #799307)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Fri, 18 Sep 2015 18:45:15 +0200
+
 rpcbind (0.2.1-6) unstable; urgency=medium
 
   * Upload to unstable.
