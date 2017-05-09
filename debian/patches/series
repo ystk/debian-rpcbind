@@ -3,3 +3,4 @@
 04-610718-non-linux.patch
 run-migration
 CVE-2015-7236.patch
+CVE-2017-8779.patch

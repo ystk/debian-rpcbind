@@ -1,3 +1,9 @@
+rpcbind (0.2.1-6+deb8u2) jessie-security; urgency=medium
+
+  * CVE-2017-8779
+
+ -- Moritz Mühlenhoff <jmm@debian.org>  Thu, 04 May 2017 19:37:10 +0200
+
 rpcbind (0.2.1-6+deb8u1) jessie-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
